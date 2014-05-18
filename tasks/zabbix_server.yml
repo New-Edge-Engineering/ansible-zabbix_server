@@ -1,33 +1,27 @@
 ---
+- name: download .deb file
+  get_url:
+    dest={{ temp_dir }}/zabbix-release_2.2-1+precise_all.deb
+    url=http://repo.zabbix.com/zabbix/{{zabbix_server_major}}.{{zabbix_server_minor}}/ubuntu/pool/main/z/zabbix-release/zabbix-release_{{zabbix_server_major}}.{{zabbix_server_minor}}-1+{{ansible_lsb.codename}}_all.deb
+    mode=0644
+  tags:
+    - zabbix
+    - packages
 
-- name : zabbix_server | Update apt cache
-  apt :
-     update_cache="yes"
+- name: install from .deb package
+  command: dpkg --skip-same-version --install {{ temp_dir }}/zabbix-release_{{zabbix_server_major}}.{{zabbix_server_minor}}-1+{{ansible_lsb.codename}}_all.deb
+  register: dpkg_result
+  changed_when: "dpkg_result.stdout.startswith('Selecting')"
+  tags:
+    - zabbix
+    - packages
 
-- name: zabbix_server | Install pre dependency
-  apt:
-     pkg="{{item}}"
-     state=present
-  with_items:
-     - python-pip
-     - libcurl3-gnutls
-  tags: zabbix_server
-
-- name: zabbix_server | Add zabbix.com repository key
-  apt_key: 
-     url=http://repo.zabbix.com/zabbix-official-repo.key
-     state=present
-  tags: zabbix_server
-
-- name: zabbix_server | Add zabbix.com repository
-  apt_repository: 
-     repo='deb http://repo.zabbix.com/zabbix/{{zabbix_server_major}}.{{zabbix_server_minor}}/{{ansible_distribution|lower}} {{ansible_lsb.codename}} main contrib non-free' 
-     state=present
-  tags: zabbix_server
-
-- name : zabbix_server | Update apt after adding repository
-  apt :
-     update_cache="yes"
+- name: refreash apt cache
+  apt: update_cache=yes
+  when: dpkg_result|changed
+  tags:
+    - zabbix
+    - packages
 
 - name: zabbix_server | Install Zabbix Server or proxy
   apt: 

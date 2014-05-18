@@ -1,21 +1,81 @@
 ---
-
-- name: postgresql | Create zabbix postgresql user
-  postgresql_user: 
-     name="{{zabbix_server_db_user}}"
-     password="{{zabbix_server_db_pass}}"
+- name: create psql password file
+  sudo: yes
   sudo_user: postgres
-  notify: restart apache2
-  tags: postgresql_server
+  template:
+    dest=/var/lib/postgresql/.pgpass
+    src=postgresql/pgpass.j2
+    mode=0600
+  tags:
+    - zabbix
+    - database
+    - postgresql
 
-- name: postgresql | Create Zabbix postgresql database
-  postgresql_db: 
-     name="{{zabbix_server_db_name}}"
-     owner="{{zabbix_server_db_user}}"
-     encoding='UTF-8'
-     lc_collate='en_US.UTF-8'
-     lc_ctype='en_US.UTF-8'
-     template='template0'
+- name: ensure supporting packages for ansible database management
+  apt: name=python-psycopg2
+  tags:
+    - zabbix
+    - database
+    - package
+
+- include: local/postgresql.yml
+  when: zabbix_server_db_host is not defined or zabbix_server_db_host == 'localhost' or zabbix_server_db_host == '127.0.0.1'
+  tags:
+    - zabbix
+    - database
+    - postgresql
+
+# - include: remote/postgresql.yml
+  # when: zabbix_server_db_host is defined and zabbix_server_db_host != 'localhost' and zabbix_server_db_host != '127.0.0.1' and ansible_ec2_ami_id is not defined
+  # tags:
+    # - zabbix
+    # - database
+# 
+# - include: aws/postgresql.yml
+  # when: zabbix_server_db_host is defined and zabbix_server_db_host != 'localhost' and zabbix_server_db_host != '127.0.0.1' and ansible_ec2_ami_id is defined
+  # tags:
+    # - zabbix
+    # - database
+    # - postgresql
+
+- name: initialize database schema
+  sudo: yes
   sudo_user: postgres
-  notify: restart apache2
-  tags: postgresql_server    
+  shell: "psql --file=/usr/share/zabbix-{{zabbix_server_install_type}}-pgsql/schema.sql --host={{ zabbix_server_db_host|default('localhost') }} zabbix zabbix"
+  when: zabbix_database|changed
+  
+  tags:
+    - zabbix
+    - database
+    - postgresql
+
+- name: initialize database images
+  sudo: yes
+  sudo_user: postgres
+  shell: "psql --file=/usr/share/zabbix-server-pgsql/images.sql --host={{ zabbix_server_db_host|default('localhost') }} zabbix zabbix"
+  when: zabbix_database|changed and zabbix_server_install_type == 'server'
+  tags:
+    - zabbix
+    - database
+    - postgresql
+
+- name: initialize database data
+  sudo: yes
+  sudo_user: postgres
+  shell: "psql --file=/usr/share/zabbix-server-pgsql/data.sql --host={{ zabbix_server_db_host|default('localhost') }} zabbix zabbix"
+  when: zabbix_database|changed and zabbix_server_install_type == 'server'
+  tags:
+    - zabbix
+    - database
+    - postgresql
+
+- name: remove psql password file
+  sudo: yes
+  sudo_user: postgres
+  file:
+    dest="/var/lib/postgresql/.pgpass"
+    state=absent
+  tags:
+    - zabbix
+    - database
+    - postgresql

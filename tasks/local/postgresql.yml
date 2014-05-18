@@ -1,0 +1,33 @@
+---
+- name: ensure supporting packages for ansible local database management
+  apt: name=libpq-dev
+  tags:
+    - zabbix
+    - database
+    - package
+
+- name: postgresql | Create zabbix postgresql user
+  postgresql_user: 
+     name="{{zabbix_server_db_user}}"
+     password="{{zabbix_server_db_pass}}"
+  sudo_user: postgres
+  tags:
+    - zabbix
+    - postgresql
+    - database
+    - user
+
+- name: postgresql | Create Zabbix postgresql database
+  postgresql_db: 
+     name="{{zabbix_server_db_name}}"
+     owner="{{zabbix_server_db_user}}"
+     encoding='UTF-8'
+     lc_collate='en_US.UTF-8'
+     lc_ctype='en_US.UTF-8'
+     template='template0'
+  sudo_user: postgres
+  register: zabbix_database
+  tags:
+    - zabbix
+    - postgresql
+    - database

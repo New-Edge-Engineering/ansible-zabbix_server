@@ -2,11 +2,11 @@
 ## zabbix Server version
 zabbix_server_major          : '2'
 zabbix_server_minor          : '2'
-zabbix_server_revision       : '2'
+zabbix_server_revision       : '3'
 
 ##Zabbix Server
-zabbix_server_host           : "{{ansible_ssh_host}}"
-zabbix_server_name           : "{{inventory_hostname}}"
+zabbix_server_host           : "{{ ansible_ssh_host|default(ansible_eth0['ipv4']['address']) }}"
+zabbix_server_name           : "{{ inventory_hostname|default(ansible_hostname) }}"
 ## Zabbix Server Extra options
 zabbix_server_LogFile        : "/var/log/zabbix/zabbix_server.log"
 zabbix_server_LogFileSize    : 0    ## 0 - disable automatic log rotation.
@@ -35,12 +35,11 @@ zabbix_server_install_type   : 'server'  ## Install zabbix 'server' or â€˜proxyâ
 zabbix_server_port           : 10051     ## Default 10051
 
 ##Database options
-zabbix_server_db_install     : False ## Install database True or False depands on other roles read the docs
 zabbix_server_db_type        : 'pgsql' ## pgsql or mysql
 zabbix_server_db_name        : "zabbix"
 zabbix_server_db_user        : "zabbix"
-zabbix_server_db_pass        : "READRdXxc&2zgvgzs_blaaaaaa" ##TODO: Change to by random
-zabbix_server_db_host        : "localhost" ##by default same server
+zabbix_server_db_pass        : "zabbix"
+zabbix_server_db_host        : "localhost" ## by default same server, will change deployment behaviour if remote sever.
 zabbix_server_db_port        : 5432
 zabbix_server_db_intial_dir  : "/usr/share/zabbix-server-{{zabbix_server_db_type}}"
 
@@ -97,8 +96,5 @@ zabbix_server_tunnel_priv_key :
 zabbix_server_version       : "{{zabbix_server_major}}.{{zabbix_server_minor}}.{{zabbix_server_revision}}"
 zabbix_server_ubuntu        : "1:{{zabbix_server_version}}-1+precise"
 zabbix_php_db               : "{%if zabbix_server_db_type == 'pgsql' %}POSTGRESQL{% elif zabbix_server_db_type == 'mysql' %}MYSQL{% else %}ERROR_UNKNOWN_DB{% endif %}"
-
-
-
-
-
+# OS Extras
+temp_dir: /tmp

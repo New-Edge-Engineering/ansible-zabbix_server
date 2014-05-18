@@ -10,10 +10,11 @@ requests, is welcomed and can be done via
 * Having ansible installed on your workstation. 
 
 ## Design ##
-With Zabbix it is easy to change from one design to another, at least in theory. I am not going to cover the design here only the basics.
-Zabbix  has the following components:
+With Zabbix it is easy to change from one design to another, at least in theory.
+I am not going to cover the design here only the basics. Zabbix  has the 
+following components:
 
-* Database (This playbook support postgresql and mysql(experimental) )
+* Database (This playbook support postgresql(tested) and mysql(experimental) )
 * Zabbix Server or Zabbix Proxy server
 * Zabbix Frontend (Apache2 and php)
 * Zabbix agent (Will be installed by default)
@@ -27,10 +28,15 @@ Zabbix  has the following components:
 3. HA (not supported) 
 
 ### Standalone ###
-Simplest installation and is the default of this playbook. Deploy Zabbix server, Frontend and the DB one the same host. Most probably that can handle at least a couple of hundreds hosts if deployed on reasonable server. And I would recommand to play with that first
+Simplest installation and is the default of this playbook. Deploy Zabbix server, 
+Frontend and the DB one the same host. Most probably that can handle at least a 
+couple of hundreds hosts if deployed on reasonable server. And I would recommand 
+to play with that first
 
 ### Distributed ###
-Deploy components on different hosts. A common design is to deploy Zabbix server on a host.  DB on another and fronetend on another. Then, if needed N proxy servers. Depending on your use you might want to deploy with different settings
+Deploy components on different hosts. A common design is to deploy Zabbix server 
+on a host.  DB on another and fronetend on another. Then, if needed N proxy 
+servers. Depending on your use you might want to deploy with different settings.
 
 By changing the following varaibles you can manage what to deploy on your host.
 
@@ -40,7 +46,7 @@ By changing the following varaibles you can manage what to deploy on your host.
 
 ```zabbix_server_front_install : True``` To deploy frontend php and apache
 
-```zabbix_server_db_install : True``` Deploy database
+```zabbix_server_db_host : hostname``` When set to localhost then the database will be deployed on the same server node.
 
 ### HA ###
 This can't be covered as it needs very custom configuration for databases, load balancers and other tools depending on your design. If you venture to build such a system you most probably can build on top of this playbook also. Here are some resources that can help you.

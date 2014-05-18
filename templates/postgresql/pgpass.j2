@@ -1,0 +1,5 @@
+# hostname:port:database:username:password
+{{ zabbix_server_db_host|default('localhost') }}:5432:{{ zabbix_server_db_name }}:{{ zabbix_server_db_user }}:{{ zabbix_server_db_pass }}
+{% if ansible_ec2_ami_id is defined -%}
+{{ zabbix_server_db_host|mandatory }}:5432:postgres:{{ zabbix_server_db_master_user|default('postgres') }}:{{ zabbix_server_db_master_password|default('postgres') }}
+{% endif -%}
