@@ -14,7 +14,7 @@
 - name: create zabbix database role in AWS RDS instance
   sudo: yes
   sudo_user: postgres
-  shell: "psql --command=\"create role zabbix with password '{{ zabbix_server_db_pass|mandatory }}' login;\" --host={{ zabbix_server_db_user|mandatory }}"
+  shell: "psql --command=\"create role zabbix with password '{{ zabbix_server_db_pass|mandatory }}' login;\" --host={{ zabbix_server_db_host|mandatory }}"
   when: zabbix_database_roles.stdout|int == 0
   tags:
     - zabbix
