@@ -30,13 +30,13 @@
   tags:
     - zabbix
     - database
-# 
-# - include: aws/postgresql.yml
-  # when: zabbix_server_db_host is defined and zabbix_server_db_host != 'localhost' and zabbix_server_db_host != '127.0.0.1' and ansible_ec2_ami_id is defined
-  # tags:
-    # - zabbix
-    # - database
-    # - postgresql
+
+- include: aws/postgresql.yml
+  when: zabbix_server_db_host is defined and zabbix_server_db_host != 'localhost' and zabbix_server_db_host != '127.0.0.1' and ansible_ec2_ami_id is defined
+  tags:
+    - zabbix
+    - database
+    - postgresql
 
 - name: initialize database schema
   sudo: yes
