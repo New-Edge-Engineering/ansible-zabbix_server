@@ -1,7 +1,7 @@
 ---
 - name: download .deb file
   get_url:
-    dest={{ temp_dir }}/zabbix-release_2.2-1+precise_all.deb
+    dest={{ temp_dir }}/zabbix-release_{{zabbix_server_major}}.{{zabbix_server_minor}}-1+{{ansible_lsb.codename}}_all.deb
     url=http://repo.zabbix.com/zabbix/{{zabbix_server_major}}.{{zabbix_server_minor}}/ubuntu/pool/main/z/zabbix-release/zabbix-release_{{zabbix_server_major}}.{{zabbix_server_minor}}-1+{{ansible_lsb.codename}}_all.deb
     mode=0644
   tags:
