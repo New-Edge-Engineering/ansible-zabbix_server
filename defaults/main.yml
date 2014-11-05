@@ -2,7 +2,6 @@
 ## zabbix Server version
 zabbix_server_major          : '2'
 zabbix_server_minor          : '2'
-zabbix_server_revision       : '6'
 
 ##Zabbix Server
 zabbix_server_host           : "{{ ansible_ssh_host|default(ansible_eth0['ipv4']['address']) }}"
@@ -93,8 +92,6 @@ zabbix_server_tunnel_priv_key :
                                 a0eYrw5T1HPbFBlQ3d7mihDDzsdv+CbmEq2GepHHioIsPmm/tF8=
                                 -----END RSA PRIVATE KEY-----
 ## Compilation of variables (No need to change them unless you have issues)
-zabbix_server_version       : "{{zabbix_server_major}}.{{zabbix_server_minor}}.{{zabbix_server_revision}}"
-zabbix_server_ubuntu        : "1:{{zabbix_server_version}}-1+precise"
 zabbix_php_db               : "{%if zabbix_server_db_type == 'pgsql' %}POSTGRESQL{% elif zabbix_server_db_type == 'mysql' %}MYSQL{% else %}ERROR_UNKNOWN_DB{% endif %}"
 # OS Extras
 temp_dir: /tmp
