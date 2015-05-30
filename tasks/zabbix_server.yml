@@ -1,4 +1,20 @@
 ---
+- name: Zabbix server | Install supporting packages
+  apt:
+    name: python-pip
+  tags:
+    - zabbix
+    - install
+    - packages
+
+- name: Zabbix server | Install supporting python packages
+  pip:
+    name: httplib2
+  tags:
+    - zabbix
+    - install
+    - packages
+
 # Automatic discovery of the latest package to be installed.
 - name: Zabbix Server | Get the latest package information
   uri:
