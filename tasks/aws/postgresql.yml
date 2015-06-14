@@ -1,5 +1,5 @@
 ---
-- name: check if zabbix exists as database role in AWS RDS instance
+- name: aws postgresql | check if zabbix exists as database role in AWS RDS instance
   sudo: yes
   sudo_user: postgres
   shell: "psql --command='\\dg' --host={{ zabbix_server_db_host|mandatory }} | grep -c zabbix"
@@ -10,8 +10,8 @@
     - configuration
     - user
     - database
-    
-- name: create zabbix database role in AWS RDS instance
+
+- name: aws postgresql | create zabbix database role in AWS RDS instance
   sudo: yes
   sudo_user: postgres
   shell: "psql --command=\"create role zabbix with password '{{ zabbix_server_db_pass|mandatory }}' login;\" --host={{ zabbix_server_db_host|mandatory }}"
@@ -22,7 +22,7 @@
     - user
     - database
 
-- name: create database in AWS RDS instance
+- name: aws postgresql | create database in AWS RDS instance
   sudo: yes
   sudo_user: postgres
   postgresql_db:
@@ -35,16 +35,22 @@
     lc_collate=en_US.UTF-8
     lc_ctype=en_US.UTF-8
     template=template0
-  register: zabbix_database
+  register: zabbix_database_result
   tags:
     - zabbix
     - setup
     - database
 
-- name: stop local postgresql server
+- name: aws postgresql | set fact
+  set_fact:
+    zabbix_database: "{{ zabbix_database_result|changed }}"
+
+- name: aws postgresql | stop local postgresql server
   service:
     name=postgresql
     state=stopped
   tags:
     - zabbix
     - database
+
+

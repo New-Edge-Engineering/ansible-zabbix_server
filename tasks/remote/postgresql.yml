@@ -1,5 +1,5 @@
 ---
-- name: create zabbix database user
+- name: remote postgresql | create zabbix database user
   sudo: yes
   sudo_user: postgres
   postgresql_user:
@@ -13,7 +13,7 @@
     - user
     - database
 
-- name: create database
+- name: remote postgresql | create database
   sudo: yes
   sudo_user: postgres
   postgresql_db:
@@ -24,16 +24,22 @@
     lc_collate=en_US.UTF-8
     lc_ctype=en_US.UTF-8
     template=template0
-  register: zabbix_database
+  register: zabbix_database_result
   tags:
     - zabbix
     - setup
     - database
 
-- name: stop local postgresql server
+- name: remote postgresql | set fact
+  set_fact:
+    zabbix_database: "{{ zabbix_database_result|changed }}"
+
+- name: remote postgresql | stop local postgresql server
   service:
     name=postgresql
     state=stopped
   tags:
     - zabbix
     - database
+
+- debug: var=zabbix_database

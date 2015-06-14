@@ -12,9 +12,9 @@ zabbix_server_LogFileSize    : 0    ## 0 - disable automatic log rotation.
 zabbix_server_DebugLevel     : 3    ## (0) no, (1) critical info (2) error info (3) warnings (4) A lots of infor)
 zabbix_server_PidFile        : "/var/run/zabbix/zabbix_server.pid"
 ##Zabbix Server Frontend
-zabbix_server_front_install  : True  ## Install frontend and dependency True or False
-zabbix_server_front_root     : "/var/www"
-zabbix_server_front_redirect : True  ## Deploys an html to root of apache to redirect to /zabbix
+zabbix_server_front_install           : True  ## Install frontend and dependency True or False
+zabbix_server_front_root              : "/var/www"
+zabbix_server_front_redirect          : True  ## Deploys an html to root of apache to redirect to /zabbix
 zabbix_server_front_apache_conf       : "/etc/zabbix/apache.conf"
 ##Zabbix Server PHP
 zabbix_server_php_date_timezone       : "Europe/Berlin" ## check http://php.net/manual/en/timezones.php

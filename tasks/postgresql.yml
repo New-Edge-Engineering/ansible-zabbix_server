@@ -38,12 +38,14 @@
     - database
     - postgresql
 
+- debug: var=zabbix_database
+
 - name: initialize database schema
   sudo: yes
   sudo_user: postgres
   shell: "psql --file=/usr/share/zabbix-{{zabbix_server_install_type}}-pgsql/schema.sql --host={{ zabbix_server_db_host|default('localhost') }} zabbix zabbix"
-  when: zabbix_database|changed
-  
+  when: zabbix_database == 'True'
+
   tags:
     - zabbix
     - database
@@ -53,7 +55,7 @@
   sudo: yes
   sudo_user: postgres
   shell: "psql --file=/usr/share/zabbix-server-pgsql/images.sql --host={{ zabbix_server_db_host|default('localhost') }} zabbix zabbix"
-  when: zabbix_database|changed and zabbix_server_install_type == 'server'
+  when: zabbix_database == 'True' and zabbix_server_install_type == 'server'
   tags:
     - zabbix
     - database
@@ -63,7 +65,7 @@
   sudo: yes
   sudo_user: postgres
   shell: "psql --file=/usr/share/zabbix-server-pgsql/data.sql --host={{ zabbix_server_db_host|default('localhost') }} zabbix zabbix"
-  when: zabbix_database|changed and zabbix_server_install_type == 'server'
+  when: zabbix_database == 'True' and zabbix_server_install_type == 'server'
   tags:
     - zabbix
     - database
