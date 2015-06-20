@@ -38,8 +38,6 @@
     - database
     - postgresql
 
-- debug: var=zabbix_database
-
 - name: initialize database schema
   sudo: yes
   sudo_user: postgres

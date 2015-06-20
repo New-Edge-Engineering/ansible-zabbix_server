@@ -3,11 +3,11 @@
 
 - name: Include postgresql if defined
   include: postgresql.yml
-  when: "zabbix_server_db_type == 'pgsql'"
+  when: "zabbix_server_db_type == 'pgsql' and zabbix_server_install == True"
 
 - name: Include mysql if defined
   include: mysql.yml
-  when: "zabbix_server_db_type == 'mysql'"
+  when: "zabbix_server_db_type == 'mysql' and zabbix_server_install == True"
 
 - name: SSH Tunnel management for zabbix
   include: tunnel_mgt.yml
