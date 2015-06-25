@@ -124,3 +124,11 @@
      group=www-data
      mode=644
   when: "zabbix_server_front_install == True and zabbix_server_front_redirect == True"
+
+- name: Zabbix Server | Install external scripts
+  get_url:
+    dest: "/usr/lib/zabbix/externalscripts/{{ item.file }}"
+    url: "{{ item.url }}"
+    mode: 755
+  with_items: zabbix_external_scripts|default([])
+  when: "zabbix_server_install == True and zabbix_server_install_type == 'server'"
