@@ -117,7 +117,7 @@
   tags: zabbix_server
 
 - name: zabbix_server | Deploy html redirect
-  template:
+  template: >
      src=zabbix_server/index.html.j2
      dest={{zabbix_server_front_root}}/index.html
      owner=www-data
@@ -126,9 +126,11 @@
   when: "zabbix_server_front_install == True and zabbix_server_front_redirect == True"
 
 - name: Zabbix Server | Install external scripts
-  get_url:
-    dest: "/usr/lib/zabbix/externalscripts/{{ item.file }}"
-    url: "{{ item.url }}"
-    mode: 755
+  get_url: >
+    dest="/usr/lib/zabbix/externalscripts/{{ item.file }}"
+    url="{{ item.url }}"
+    owner=zabbix
+    group=zabbix
+    mode=755
   with_items: zabbix_external_scripts|default([])
   when: "zabbix_server_install == True and zabbix_server_install_type == 'server'"
