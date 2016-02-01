@@ -49,12 +49,12 @@
   tags: zabbix_server
 
 - name : Zabbix Agent | Update apt after adding repository
-  apt :
+  apt:
      update_cache="yes"
 
 - name: Zabbix Server | Install Zabbix Server or Proxy
   apt:
-     pkg="zabbix-{{zabbix_server_install_type}}-{{zabbix_server_db_type}}"="{{ zabbix_targeting_version.stdout }}"
+     pkg="zabbix-{{zabbix_server_install_type}}-{{zabbix_server_db_type}}={{ zabbix_targeting_version.stdout }}"
      state=present
      force=yes
   tags: zabbix_server
@@ -62,7 +62,7 @@
 
 - name: zabbix_server | Install frontend
   apt:
-     pkg="zabbix-frontend-php"="{{ zabbix_targeting_version.stdout }}"
+     pkg="zabbix-frontend-php={{ zabbix_targeting_version.stdout }}"
      state=present
      force=yes
   tags: zabbix_server
@@ -70,7 +70,7 @@
 
 - name: zabbix_server | Install Zabbix agent
   apt:
-     pkg="zabbix-agent"="{{ zabbix_targeting_version.stdout }}"
+     pkg="zabbix-agent={{ zabbix_targeting_version.stdout }}"
      state=present
      force=yes
   tags: zabbix_server
