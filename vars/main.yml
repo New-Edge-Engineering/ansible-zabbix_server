@@ -1,0 +1,6 @@
+---
+# Constants
+
+## zabbix Server version
+zabbix_server_major          : '2'
+zabbix_server_minor          : '4'

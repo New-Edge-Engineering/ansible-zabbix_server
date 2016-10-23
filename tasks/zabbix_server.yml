@@ -1,136 +1,142 @@
 ---
-- name: Zabbix server | Install supporting packages
-  apt:
-    name: python-pip
-  tags:
-    - zabbix
-    - install
-    - packages
-
-- name: Zabbix server | Install supporting python packages
-  pip:
-    name: httplib2
-  tags:
-    - zabbix
-    - install
-    - packages
+# - name: Install supporting packages
+#   apt:
+#     name: python-pip
+#   tags:
+#     - zabbix
+#     - install
+#     - packages
+#
+# - name: Install supporting python packages
+#   pip:
+#     name: httplib2
+#   tags:
+#     - zabbix
+#     - install
+#     - packages
 
 # Automatic discovery of the latest package to be installed.
-- name: Zabbix Server | Get the latest package information
-  uri:
-    url: http://repo.zabbix.com/zabbix/{{zabbix_server_major}}.{{zabbix_server_minor}}/{{ansible_distribution|lower}}/dists/{{ansible_lsb.codename}}/main/binary-amd64/Packages
-    return_content: yes
-  register: zabbix_packages_info
-  tags:
-    - zabbix
-    - install
-    - packages
+# - name: Get the latest package information
+#   uri:
+#     url: "http://repo.zabbix.com/zabbix/{{zabbix_server_major}}.{{zabbix_server_minor}}/{{ansible_distribution|lower}}/dists/{{ansible_lsb.codename}}/main/binary-amd64/Packages"
+#     return_content: yes
+#   register: zabbix_packages_info
+#   tags:
+#     - zabbix
+#     - install
+#     - packages
+#
+# - debug: msg="{{ zabbix_packages_info.content }}"
+#
+# - name: Find latest package name
+#   shell: "echo '{{ zabbix_packages_info.content }}'  | grep -A 11 \"Package: zabbix-{{zabbix_server_install_type}}-{{zabbix_server_db_type}}\" | tail -n 1| awk '{print $2}'"
+#   register: zabbix_deb_package
+#   tags:
+#     - zabbix
+#     - install
+#     - packages
+#
+# - name: Find latest package version
+#   shell: "echo '{{ zabbix_packages_info.content }}'  | grep -A 2 \"Package: zabbix-{{zabbix_server_install_type}}-{{zabbix_server_db_type}}\" | tail -n 1| awk '{print $2}'"
+#   register: zabbix_targeting_version
+#   tags:
+#     - zabbix
+#     - install
+#     - packages
 
-- name: Zabbix Server | Find latest package name
-  shell: "echo '{{ zabbix_packages_info.content }}'  | grep -A 11 \"Package: zabbix-{{zabbix_server_install_type}}-{{zabbix_server_db_type}}\" | tail -n 1| awk '{print $2}'"
-  register: zabbix_deb_package
-  tags:
-    - zabbix
-    - install
-    - packages
-
-- name: Zabbix Server | Find latest package version
-  shell: "echo '{{ zabbix_packages_info.content }}'  | grep -A 2 \"Package: zabbix-{{zabbix_server_install_type}}-{{zabbix_server_db_type}}\" | tail -n 1| awk '{print $2}'"
-  register: zabbix_targeting_version
-  tags:
-    - zabbix
-    - install
-    - packages
-
-- name: Zabbix Agent | Add zabbix.com repository
+- name: Ensure apt zabbix.com repository exists
   apt_repository:
-     repo="deb http://repo.zabbix.com/zabbix/{{zabbix_server_major}}.{{zabbix_server_minor}}/{{ansible_distribution|lower}} {{ansible_lsb.codename}} main contrib non-free"
-     state=present
+     repo: "deb http://repo.zabbix.com/zabbix/{{zabbix_server_major}}.{{zabbix_server_minor}}/{{ansible_distribution|lower}} {{ansible_lsb.codename}} main contrib non-free"
+     state: present
+  when: ansible_os_family == 'Debian'
+  register: apt_repo
   tags: zabbix_server
 
-- name : Zabbix Agent | Update apt after adding repository
+- name : Update apt after adding repository
   apt:
-     update_cache="yes"
+     update_cache: "yes"
+  when: apt_repo|changed
 
-- name: Zabbix Server | Install Zabbix Server or Proxy
+- name: Install Zabbix Server or Proxy
   apt:
-     pkg="zabbix-{{zabbix_server_install_type}}-{{zabbix_server_db_type}}={{ zabbix_targeting_version.stdout }}"
-     state=present
-     force=yes
-  tags: zabbix_server
+     pkg: "zabbix-{{zabbix_server_install_type}}-{{zabbix_server_db_type}}"
+     state: present
+     force: yes
   when: "zabbix_server_install == True"
+  tags: zabbix_server
 
 - name: zabbix_server | Install frontend
   apt:
-     pkg="zabbix-frontend-php={{ zabbix_targeting_version.stdout }}"
-     state=present
-     force=yes
+     pkg: "zabbix-frontend-php"
+     state: present
+     force: yes
+  when: "zabbix_server_front_install ==  True"
   tags: zabbix_server
-  when: "zabbix_server_front_install == True"
 
-- name: zabbix_server | Install Zabbix agent
-  apt:
-     pkg="zabbix-agent={{ zabbix_targeting_version.stdout }}"
-     state=present
-     force=yes
-  tags: zabbix_server
+# - name: zabbix_server | Install Zabbix agent
+#   apt:
+#      pkg: "zabbix-agent"
+#      state: present
+#      force: yes
+#   tags: zabbix_server
 
 - name: zabbix_server | Install pre dependency for PHP
   apt:
-     pkg="{{item}}"
-     state=present
+     pkg: "{{item}}"
+     state: present
   with_items:
-     - php5-{{zabbix_server_db_type}}
+     - "php5-{{zabbix_server_db_type}}"
+  when: "zabbix_server_front_install ==  True"
   tags: zabbix_server
-  when: "zabbix_server_front_install == True"
 
 - name: zabbix_server | Zabbix server conf file
   template:
-     src=zabbix_server/zabbix_server.conf
-     dest=/etc/zabbix/
-     owner=zabbix
-     group=zabbix
-     mode=0600
+     src: zabbix_server/zabbix_server.conf
+     dest: /etc/zabbix/
+     owner: zabbix
+     group: zabbix
+     mode: 0600
+  when: "zabbix_server_install ==  True and zabbix_server_install_type ==  'server'"
   tags: zabbix_server
-  when: "zabbix_server_install == True and zabbix_server_install_type == 'server'"
 
 - name: zabbix_server | Zabbix server php conf
   template:
-     src=zabbix_server/zabbix.conf.php
-     dest=/etc/zabbix/web
-     owner=www-data
-     group=www-data
-     mode=0600
+     src: zabbix_server/zabbix.conf.php
+     dest: /etc/zabbix/web
+     owner: www-data
+     group: www-data
+     mode: 0600
   tags: zabbix_server
-  when: "zabbix_server_front_install == True"
+  when: "zabbix_server_front_install ==  True"
   notify: restart apache2
 
 - name: zabbix_server | apache config
   template:
-     src=apache2/apache.conf.j2
-     dest="{{zabbix_server_front_apache_conf}}"
-     owner=root
-     group=root
-     mode=0644
+     src: apache2/apache.conf.j2
+     dest: "{{zabbix_server_front_apache_conf}}"
+     owner: root
+     group: root
+     mode: 0644
   notify: restart apache2
-  when: "zabbix_server_front_install == True"
+  when: "zabbix_server_front_install ==  True"
   tags: zabbix_server
 
 - name: zabbix_server | Deploy html redirect
-  template: >
-     src=zabbix_server/index.html.j2
-     dest={{zabbix_server_front_root}}/index.html
-     owner=www-data
-     group=www-data
-     mode=0644
-  when: "zabbix_server_front_install == True and zabbix_server_front_redirect == True"
+  template:
+     src: zabbix_server/index.html.j2
+     dest: "{{zabbix_server_front_root}}/index.html"
+     owner: www-data
+     group: www-data
+     mode: 0644
+  when: "zabbix_server_front_install ==  True and zabbix_server_front_redirect ==  True"
+  notify: restart apache2
 
-- name: Zabbix Server | Install external scripts
-  get_url: >
-    dest="/usr/lib/zabbix/externalscripts/{{ item.file }}"
-    url="{{ item.url }}"
-    owner=zabbix
-    group=zabbix
-    mode=0755
+- name: Install external scripts
+  get_url:
+    dest: "/usr/lib/zabbix/externalscripts/{{ item.file }}"
+    url: "{{ item.url }}"
+    owner: zabbix
+    group: zabbix
+    mode: 0755
   with_items: zabbix_external_scripts|default([])
-  when: "zabbix_server_install == True and zabbix_server_install_type == 'server'"
+  when: "zabbix_server_install ==  True and zabbix_server_install_type ==  'server'"

@@ -1,8 +1,4 @@
-
-## zabbix Server version
-zabbix_server_major          : '2'
-zabbix_server_minor          : '2'
-
+---
 ##Zabbix Server
 zabbix_server_host           : "{{ ansible_ssh_host|default(ansible_eth0['ipv4']['address']) }}"
 zabbix_server_name           : "{{ inventory_hostname|default(ansible_hostname) }}"
@@ -13,7 +9,7 @@ zabbix_server_DebugLevel     : 3    ## (0) no, (1) critical info (2) error info 
 zabbix_server_PidFile        : "/var/run/zabbix/zabbix_server.pid"
 ##Zabbix Server Frontend
 zabbix_server_front_install           : True  ## Install frontend and dependency True or False
-zabbix_server_front_root              : "/var/www"
+zabbix_server_front_root              : "/var/www/html"
 zabbix_server_front_redirect          : True  ## Deploys an html to root of apache to redirect to /zabbix
 zabbix_server_front_apache_conf       : "/etc/zabbix/apache.conf"
 ##Zabbix Server PHP
