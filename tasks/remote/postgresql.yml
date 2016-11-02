@@ -3,10 +3,10 @@
   sudo: yes
   sudo_user: postgres
   postgresql_user:
-    login_host={{ zabbix_server_db_host|mandatory }}
-    encrypted=no
-    name="{{zabbix_server_db_user|mandatory}}"
-    password="{{zabbix_server_db_pass|mandatory}}"
+    login_host: "{{ zabbix_server_db_host|mandatory }}"
+    encrypted: no
+    name: "{{zabbix_server_db_user|mandatory}}"
+    password: "{{zabbix_server_db_pass|mandatory}}"
   tags:
     - zabbix
     - configuration
@@ -17,13 +17,13 @@
   sudo: yes
   sudo_user: postgres
   postgresql_db:
-    login_host={{ zabbix_server_db_host|mandatory }}
-    name="{{zabbix_server_db_name|mandatory}}"
-    owner="{{zabbix_server_db_user|mandatory}}"
-    encoding=UTF-8
-    lc_collate=en_US.UTF-8
-    lc_ctype=en_US.UTF-8
-    template=template0
+    login_host: "{{ zabbix_server_db_host|mandatory }}"
+    name: "{{zabbix_server_db_name|mandatory}}"
+    owner: "{{zabbix_server_db_user|mandatory}}"
+    encoding: UTF-8
+    lc_collate: en_US.UTF-8
+    lc_ctype: en_US.UTF-8
+    template: template0
   register: zabbix_database_result
   tags:
     - zabbix
@@ -36,10 +36,10 @@
 
 - name: remote postgresql | stop local postgresql server
   service:
-    name=postgresql
-    state=stopped
+    name: postgresql
+    state: stopped
   tags:
     - zabbix
     - database
-
-- debug: var=zabbix_database
+  notify:
+    - restart zabbix_server_or_proxy

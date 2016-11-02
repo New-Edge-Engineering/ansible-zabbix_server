@@ -73,12 +73,12 @@
   when: "zabbix_server_front_install ==  True"
   tags: zabbix_server
 
-# - name: zabbix_server | Install Zabbix agent
-#   apt:
-#      pkg: "zabbix-agent"
-#      state: present
-#      force: yes
-#   tags: zabbix_server
+- name: zabbix_server | Install Zabbix agent
+  apt:
+     pkg: "zabbix-agent"
+     state: present
+     force: yes
+  tags: zabbix_server
 
 - name: zabbix_server | Install pre dependency for PHP
   apt:
@@ -139,4 +139,4 @@
     group: zabbix
     mode: 0755
   with_items: zabbix_external_scripts|default([])
-  when: "zabbix_server_install ==  True and zabbix_server_install_type ==  'server'"
+  when: "zabbix_server_install == True and zabbix_server_install_type ==  'server'"
