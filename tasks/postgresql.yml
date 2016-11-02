@@ -3,9 +3,9 @@
   sudo: yes
   sudo_user: postgres
   template:
-    dest=/var/lib/postgresql/.pgpass
-    src=postgresql/pgpass.j2
-    mode=0600
+    dest: /var/lib/postgresql/.pgpass
+    src: postgresql/pgpass.j2
+    mode: 0600
   tags:
     - zabbix
     - database
@@ -73,8 +73,8 @@
   sudo: yes
   sudo_user: postgres
   file:
-    dest="/var/lib/postgresql/.pgpass"
-    state=absent
+    dest: "/var/lib/postgresql/.pgpass"
+    state: absent
   tags:
     - zabbix
     - database
