@@ -1,4 +1,7 @@
 ---
+- debug:
+    msg: "psql --command='\\dg' --host={{ zabbix_server_db_host|mandatory }} | grep -c zabbix"
+
 - name: aws postgresql | check if zabbix exists as database role in AWS RDS instance
   sudo: yes
   sudo_user: postgres
