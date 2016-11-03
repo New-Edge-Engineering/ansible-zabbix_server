@@ -1,7 +1,7 @@
 ---
 - name: create psql password file
-  sudo: yes
-  sudo_user: postgres
+  become: yes
+  become_user: postgres
   template:
     dest: /var/lib/postgresql/.pgpass
     src: postgresql/pgpass.j2
@@ -39,8 +39,8 @@
     - postgresql
 
 - name: initialize database schema
-  sudo: yes
-  sudo_user: postgres
+  become: yes
+  become_user: postgres
   shell: "psql --file=/usr/share/zabbix-{{zabbix_server_install_type}}-pgsql/schema.sql --host={{ zabbix_server_db_host|default('localhost') }} zabbix zabbix"
   when: zabbix_database == True
 
@@ -50,8 +50,8 @@
     - postgresql
 
 - name: initialize database images
-  sudo: yes
-  sudo_user: postgres
+  become: yes
+  become_user: postgres
   shell: "psql --file=/usr/share/zabbix-server-pgsql/images.sql --host={{ zabbix_server_db_host|default('localhost') }} zabbix zabbix"
   when: zabbix_database == True and zabbix_server_install_type == 'server'
   tags:
@@ -60,8 +60,8 @@
     - postgresql
 
 - name: initialize database data
-  sudo: yes
-  sudo_user: postgres
+  become: yes
+  become_user: postgres
   shell: "psql --file=/usr/share/zabbix-server-pgsql/data.sql --host={{ zabbix_server_db_host|default('localhost') }} zabbix zabbix"
   when: zabbix_database == True and zabbix_server_install_type == 'server'
   tags:
@@ -70,8 +70,8 @@
     - postgresql
 
 - name: remove psql password file
-  sudo: yes
-  sudo_user: postgres
+  become: yes
+  become_user: postgres
   file:
     dest: "/var/lib/postgresql/.pgpass"
     state: absent
