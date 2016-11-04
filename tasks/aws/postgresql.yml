@@ -2,8 +2,9 @@
 - name: aws postgresql | check if zabbix exists as database role in AWS RDS instance
   become: yes
   become_user: postgres
-  shell: "psql --command='\\dg zabbix --quiet' --host={{ zabbix_server_db_host|mandatory }} | grep -c zabbix"
+  shell: "psql --command='\\dg zabbix'  --quiet --host={{ zabbix_server_db_host|mandatory }} | grep -c zabbix"
   register: zabbix_database_roles
+  failed_when: "zabbix_database_roles.stderr|length > 0"
   tags:
     - zabbix
     - configuration
