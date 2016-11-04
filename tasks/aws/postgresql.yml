@@ -1,34 +1,8 @@
 ---
-- debug:
-    msg: "psql --command='\\dg' --host={{ zabbix_server_db_host|mandatory }} | grep -c zabbix"
-
-- name: Install supporting packages
-  apt:
-    name: python-pip
-  tags:
-    - zabbix
-    - configuration
-    - python-packages
-    - database
-    - postgresql
-
-- name: Install supporting python packages
-  pip:
-    name: pexpect
-  tags:
-    - zabbix
-    - configuration
-    - python-packages
-    - database
-    - postgresql
-
 - name: aws postgresql | check if zabbix exists as database role in AWS RDS instance
   become: yes
   become_user: postgres
-  expect:
-    command: "psql --command='\\dg' --host={{ zabbix_server_db_host|mandatory }}"
-    responses:
-      (?i)password: "{{ zabbix_server_db_master_pass|mandatory }}"
+  shell: "psql --command='\\dg zabbix --quiet' --host={{ zabbix_server_db_host|mandatory }} | grep -c zabbix"
   register: zabbix_database_roles
   tags:
     - zabbix
@@ -43,10 +17,7 @@
 - name: aws postgresql | create zabbix database role in AWS RDS instance
   become: yes
   become_user: postgres
-  expect:
-    command: "psql --command=\"create role zabbix with password '{{ zabbix_server_db_pass|mandatory }}' login;\" --host={{ zabbix_server_db_host|mandatory }}"
-    responses:
-      (?i)password: "{{ zabbix_server_db_master_pass|mandatory }}"
+  shell: "psql --command=\"create role zabbix with password '{{ zabbix_server_db_pass|mandatory }}' login;\" --host={{ zabbix_server_db_host|mandatory }}"
   when: zabbix_database_roles.stdout|int == 0
   tags:
     - zabbix

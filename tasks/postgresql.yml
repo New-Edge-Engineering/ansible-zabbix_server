@@ -1,4 +1,7 @@
 ---
+- debug:
+    var: ansible_ec2_ami_id
+
 - name: create psql password file
   become: yes
   become_user: postgres
