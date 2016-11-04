@@ -26,11 +26,10 @@
   become: yes
   become_user: postgres
   expect:
-    command: "psql --command='\\dg' --host={{ zabbix_server_db_host|mandatory }} | grep -c zabbix"
+    command: "psql --command='\\dg' --host={{ zabbix_server_db_host|mandatory }}"
     responses:
       (?i)password: "{{ zabbix_server_db_master_pass|mandatory }}"
   register: zabbix_database_roles
-  # ignore_errors: true
   tags:
     - zabbix
     - configuration
@@ -38,10 +37,16 @@
     - database
     - postgresql
 
+- debug:
+    var: zabbix_database_roles
+
 - name: aws postgresql | create zabbix database role in AWS RDS instance
   become: yes
   become_user: postgres
-  shell: "psql --command=\"create role zabbix with password '{{ zabbix_server_db_pass|mandatory }}' login;\" --host={{ zabbix_server_db_host|mandatory }}"
+  expect:
+    command: "psql --command=\"create role zabbix with password '{{ zabbix_server_db_pass|mandatory }}' login;\" --host={{ zabbix_server_db_host|mandatory }}"
+    responses:
+      (?i)password: "{{ zabbix_server_db_master_pass|mandatory }}"
   when: zabbix_database_roles.stdout|int == 0
   tags:
     - zabbix
