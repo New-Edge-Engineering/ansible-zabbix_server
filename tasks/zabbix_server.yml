@@ -65,11 +65,13 @@
   when: "zabbix_server_front_install ==  True"
   notify: restart apache2
 
-- name: zabbix_server | ensure apache2 rewrite module is pressent
+- name: zabbix_server | ensure apache2 rewrite module is present
   apache2_module:
     name: rewrite
     state: present
-
+  tags: zabbix_server
+  when: "zabbix_server_front_install ==  True"
+  notify: restart apache
 
 - name: zabbix_server | apache config
   template:
