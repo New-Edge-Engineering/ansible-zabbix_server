@@ -1,49 +1,4 @@
 ---
-# - name: Install supporting packages
-#   apt:
-#     name: python-pip
-#   tags:
-#     - zabbix
-#     - install
-#     - packages
-#
-# - name: Install supporting python packages
-#   pip:
-#     name: httplib2
-#   tags:
-#     - zabbix
-#     - install
-#     - packages
-
-# Automatic discovery of the latest package to be installed.
-# - name: Get the latest package information
-#   uri:
-#     url: "http://repo.zabbix.com/zabbix/{{zabbix_server_major}}.{{zabbix_server_minor}}/{{ansible_distribution|lower}}/dists/{{ansible_lsb.codename}}/main/binary-amd64/Packages"
-#     return_content: yes
-#   register: zabbix_packages_info
-#   tags:
-#     - zabbix
-#     - install
-#     - packages
-#
-# - debug: msg="{{ zabbix_packages_info.content }}"
-#
-# - name: Find latest package name
-#   shell: "echo '{{ zabbix_packages_info.content }}'  | grep -A 11 \"Package: zabbix-{{zabbix_server_install_type}}-{{zabbix_server_db_type}}\" | tail -n 1| awk '{print $2}'"
-#   register: zabbix_deb_package
-#   tags:
-#     - zabbix
-#     - install
-#     - packages
-#
-# - name: Find latest package version
-#   shell: "echo '{{ zabbix_packages_info.content }}'  | grep -A 2 \"Package: zabbix-{{zabbix_server_install_type}}-{{zabbix_server_db_type}}\" | tail -n 1| awk '{print $2}'"
-#   register: zabbix_targeting_version
-#   tags:
-#     - zabbix
-#     - install
-#     - packages
-
 - name: Ensure apt zabbix.com repository exists
   apt_repository:
      repo: "deb http://repo.zabbix.com/zabbix/{{zabbix_server_major}}.{{zabbix_server_minor}}/{{ansible_distribution|lower}} {{ansible_lsb.codename}} main contrib non-free"
@@ -73,12 +28,12 @@
   when: "zabbix_server_front_install ==  True"
   tags: zabbix_server
 
-# - name: zabbix_server | Install Zabbix agent
-#   apt:
-#      pkg: "zabbix-agent"
-#      state: present
-#      force: yes
-#   tags: zabbix_server
+- name: zabbix_server | Install Zabbix agent
+  apt:
+     pkg: "zabbix-agent"
+     state: present
+     force: yes
+  tags: zabbix_server
 
 - name: zabbix_server | Install pre dependency for PHP
   apt:
@@ -109,6 +64,12 @@
   tags: zabbix_server
   when: "zabbix_server_front_install ==  True"
   notify: restart apache2
+
+- name: zabbix_server | ensure apache2 rewrite module is pressent
+  apache2_module:
+    name: rewrite
+    state: present
+
 
 - name: zabbix_server | apache config
   template:
