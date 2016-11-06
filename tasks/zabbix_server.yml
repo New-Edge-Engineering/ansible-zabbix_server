@@ -100,4 +100,4 @@
     group: zabbix
     mode: 0755
   with_items: zabbix_external_scripts|default([])
-  when: "zabbix_server_install ==  True and zabbix_server_install_type ==  'server'"
+  when: "zabbix_server_install == True and zabbix_server_install_type ==  'server'"
