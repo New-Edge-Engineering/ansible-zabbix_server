@@ -35,6 +35,23 @@
      force: yes
   tags: zabbix_server
 
+- name: zabbix_server | Ensure Zabbix agent Hostname is commented out.
+  lineinfile:
+    backref: yes
+    dest: /etc/zabbix/zabbix_agentd.conf
+    line: "#Hostname=\\1"
+    regexp: "^Hostname=(.*)$"
+  when: "zabbix_server_front_install ==  True"
+  tags: zabbix_server
+
+- name: zabbix_server | Ensure Zabbix agent HostMetadata is system.uname
+  lineinfile:
+    dest: /etc/zabbix/zabbix_agentd.conf
+    line: "HostMetadata=system.uname"
+    regexp: "^#HostMetadata=.*"
+  when: "zabbix_server_front_install ==  True"
+  tags: zabbix_server
+
 - name: zabbix_server | Install pre dependency for PHP
   apt:
      pkg: "{{item}}"
