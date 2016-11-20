@@ -37,7 +37,7 @@
 
 - name: zabbix_server | Ensure Zabbix agent Hostname is commented out.
   lineinfile:
-    backref: yes
+    backrefs: yes
     dest: /etc/zabbix/zabbix_agentd.conf
     line: "#Hostname=\\1"
     regexp: "^Hostname=(.*)$"
