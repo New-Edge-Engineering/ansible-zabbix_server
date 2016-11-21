@@ -41,7 +41,6 @@
     dest: /etc/zabbix/zabbix_agentd.conf
     line: "# Hostname=\\1"
     regexp: "^Hostname=(.*)$"
-  when: "zabbix_server_front_install ==  True"
   tags: zabbix_server
 
 - name: zabbix_server | Ensure Zabbix agent HostMetadata is system.uname
@@ -49,7 +48,6 @@
     dest: /etc/zabbix/zabbix_agentd.conf
     line: "HostMetadata={{ ansible_system }}"
     insertafter: "^#\\sHostMetadata=$"
-  when: "zabbix_server_front_install ==  True"
   tags: zabbix_server
 
 - name: zabbix_server | Install pre dependency for PHP
@@ -68,7 +66,7 @@
      owner: zabbix
      group: zabbix
      mode: 0600
-  when: "zabbix_server_install ==  True and zabbix_server_install_type ==  'server'"
+  when: "zabbix_server_install == True and zabbix_server_install_type == 'server'"
   tags: zabbix_server
 
 - name: zabbix_server | Zabbix server php conf
