@@ -39,7 +39,7 @@
   lineinfile:
     backrefs: yes
     dest: /etc/zabbix/zabbix_agentd.conf
-    line: "#Hostname=\\1"
+    line: "# Hostname=\\1"
     regexp: "^Hostname=(.*)$"
   when: "zabbix_server_front_install ==  True"
   tags: zabbix_server
@@ -47,8 +47,8 @@
 - name: zabbix_server | Ensure Zabbix agent HostMetadata is system.uname
   lineinfile:
     dest: /etc/zabbix/zabbix_agentd.conf
-    line: "HostMetadata=system.uname"
-    regexp: "^#HostMetadata=.*"
+    line: "HostMetadata={{ ansible_system }}"
+    insertafter: "^#\\sHostMetadata=$"
   when: "zabbix_server_front_install ==  True"
   tags: zabbix_server
 
