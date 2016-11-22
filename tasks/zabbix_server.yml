@@ -39,8 +39,9 @@
   lineinfile:
     backrefs: yes
     dest: /etc/zabbix/zabbix_agentd.conf
-    line: "# Hostname=\\1"
+    line: "Hostname={{ zabbix_hostname }}"
     regexp: "^Hostname=(.*)$"
+  when: zabbix_hostname is defined
   tags: zabbix_server
 
 - name: zabbix_server | Ensure Zabbix agent HostMetadata is system.uname
