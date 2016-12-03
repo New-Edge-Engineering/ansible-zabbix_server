@@ -47,7 +47,7 @@
 - name: zabbix_server | Ensure Zabbix agent HostMetadata is system.uname
   lineinfile:
     dest: /etc/zabbix/zabbix_agentd.conf
-    line: "HostMetadata={{ ansible_system }}"
+    line: "HostMetadata={{ ansible_system }}{% if zabbix_server_roles is defined %} {{ zabbix_server_roles|join(' ')}}{% endif %}"
     insertafter: "^#\\sHostMetadata=$"
   tags: zabbix_server
 
